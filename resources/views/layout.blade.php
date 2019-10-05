@@ -16,6 +16,8 @@
       @if(Auth::check())
         <span class="my-navbar-item">ようこそ, {{ Auth::user()->name }}さん</span>
         |
+        <a href="{{ route('users.index', ['user' => Auth::id() ]) }}" class="my-navbar-item">ユーザーページ</a>
+        |
         <a href="#" id="logout" class="my-navbar-item">ログアウト</a>
         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: nane;">
           @csrf
