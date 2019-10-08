@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\User;
+use App\Http\Requests\EditUser;
 
 class UserController extends Controller
 {
@@ -14,13 +14,20 @@ class UserController extends Controller
         ]);
     }
 
-    public function showEditForm()
+    public function showEditForm(User $user)
     {
-        return view('users/edit');
+        return view('users/edit',[
+            'user' => $user,
+            ]);
     }
 
-    public function edit()
+    public function edit(User $user,EditUser $request)
     {
+        $user->name = $request->name;
+        $user->save();
 
+        return redirect()->route('users.index',[
+            'id' => $user->id,
+        ]);
     }
 }
