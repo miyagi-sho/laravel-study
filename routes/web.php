@@ -34,4 +34,6 @@ Route::group(['middleware' => 'auth'], function(){
         });
 });
 
+Route::get('/tasks/{share}', 'TaskController@publicTask')->name('tasks.public');
+
 Auth::routes();
