@@ -120,6 +120,23 @@ class TaskController extends Controller
     }
 
     /**
+     * @param string $share
+     * @return \Illuminate\View\View
+     */
+    public function publicTask(string $share)
+    {
+        $task = Task::where('share', $share)->first();
+
+        if($task === null){
+            abort(404);
+        }
+
+        return view('tasks/public',[
+            'task' => $task
+        ]);
+    }
+
+    /**
      * シェア作成
      * @param Task $task
      */
@@ -128,8 +145,6 @@ class TaskController extends Controller
         $data = true;
         While($data === true) {
             $share = Str::random(20);
-
-            /** @noinspection PhpUndefinedMethodInspection*/
             $data = Task::where('share', $share)->exists();
         }
 
