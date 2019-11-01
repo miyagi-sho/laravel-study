@@ -8,6 +8,7 @@ use App\Http\Requests\EditTask;
 use App\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class TaskController extends Controller
 {
@@ -98,13 +99,42 @@ class TaskController extends Controller
         ]);
     }
 
+
+    /**
+     * シェアURL確認画面
+     * @param Folder $folder
+     * @param Task $task
+     * @return \Illuminate\View\View
+     */
     public function share(Folder $folder, Task $task)
     {
         $this->checkRelation($folder, $task);
 
-        return view('tasks.share', [
+        if($task->share === null) {
+            $this->randomShare($task);
+        }
+
+        return view('tasks/share', [
             'task' => $task,
         ]);
+    }
+
+    /**
+     * シェア作成
+     * @param Task $task
+     */
+    private function randomShare(Task $task)
+    {
+        $data = true;
+        While($data === true) {
+            $share = Str::random(20);
+
+            /** @noinspection PhpUndefinedMethodInspection*/
+            $data = Task::where('share', $share)->exists();
+        }
+
+        $task->share = $share;
+        $task->save();
     }
 
     private function checkRelation(Folder $folder, Task $task)
