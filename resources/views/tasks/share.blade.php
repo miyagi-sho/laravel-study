@@ -7,7 +7,9 @@
                 <nav class="panel panel-default">
                     <div class="panel-heading">公開されているURL</div>
                     <div class="panel-body">
-                        <p>URL</p>
+                        <a href="{{ route('tasks.public', ['share' => $task->share]) }}">
+                            {{ route('tasks.public', ['share' => $task->share]) }}
+                        </a>
                     </div>
                 </nav>
             </div>
