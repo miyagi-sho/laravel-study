@@ -13,7 +13,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Task
+        $this->app->bind(
+            \App\Business\Task\TaskBusinessLogicInterface::class,
+            \App\Business\Task\TaskBusinessLogic::class
+        );
     }
 
     /**
