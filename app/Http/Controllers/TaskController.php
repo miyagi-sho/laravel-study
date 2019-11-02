@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Business\Task\TaskBusinessLogicInterface;
 use App\Folder;
 use App\Http\Requests\CreateTask;
 use App\Http\Requests\EditTask;
 use App\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+
 
 class TaskController extends Controller
 {
+    public function __construct(TaskBusinessLogicInterface $task_business_logic)
+    {
+        $this->task_business_logic =  $task_business_logic;
+    }
+
     /**
      * タスク一覧
      * @param Folder $folder
@@ -111,7 +117,7 @@ class TaskController extends Controller
         $this->checkRelation($folder, $task);
 
         if($task->share === null) {
-            $this->randomShare($task);
+            $this->task_business_logic->randomShare($task);
         }
 
         return view('tasks/share', [
@@ -125,7 +131,7 @@ class TaskController extends Controller
      */
     public function publicTask(string $share)
     {
-        $task = Task::where('share', $share)->first();
+        $task = $this->task_business_logic->searchTask($share);
 
         if($task === null){
             abort(404);
@@ -134,22 +140,6 @@ class TaskController extends Controller
         return view('tasks/public',[
             'task' => $task
         ]);
-    }
-
-    /**
-     * シェア作成
-     * @param Task $task
-     */
-    private function randomShare(Task $task)
-    {
-        $data = true;
-        While($data === true) {
-            $share = Str::random(20);
-            $data = Task::where('share', $share)->exists();
-        }
-
-        $task->share = $share;
-        $task->save();
     }
 
     private function checkRelation(Folder $folder, Task $task)
