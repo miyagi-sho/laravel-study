@@ -54,8 +54,8 @@
                                   </td>
                                   <td>{{ $task->formatted_due_date }}</td>
                                   <td>
-                                      <a href="#" id="share">シェア</a>
-                                      <form id="share-form" action="{{ route('tasks.share', ['id' => $task->folder_id, 'task_id' => $task->id]) }}" method="POST" style="display:none;">
+                                      <a href="#" class="shares">シェア</a>
+                                      <form class="shares-form" action="{{ route('tasks.share', ['id' => $task->folder_id, 'task_id' => $task->id]) }}" method="POST" style="display:none;">
                                           @csrf
                                       </form>
                                   </td>
@@ -72,10 +72,8 @@
            </div>
        </div>
    </div>
-  <script>
-      document.getElementById('share').addEventListener('click', function(event){
-          event.preventDefault();
-          document.getElementById('share-form').submit();
-      });
-  </script>
+@endsection
+
+@section('scripts')
+    @include('share.task_share.scripts')
 @endsection
