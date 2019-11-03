@@ -22,10 +22,10 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     public function randomShare($task)
     {
-        $data = true;
-        While($data === true) {
+        $is_task_share = true;
+        While($is_task_share === true) {
             $share = Str::random(20);
-            $data = Task::where('share', $share)->exists();
+            $is_task_share = Task::where('share', $share)->exists();
         }
 
         $task->share = $share;
