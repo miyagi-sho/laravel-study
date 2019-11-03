@@ -22,11 +22,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     public function randomShare($task)
     {
-        $is_task_share = true;
-        While($is_task_share === true) {
-            $share = Str::random(20);
-            $is_task_share = Task::where('share', $share)->exists();
-        }
+        $share = $this->uniqueUrlShare();
 
         $task->share = $share;
         $task->save();
@@ -38,5 +34,15 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     public function searchTaskByShare($share){
         return Task::where('share', $share)->first();
+    }
+
+    private function uniqueUrlShare()
+    {
+        $is_task_share = true;
+        While($is_task_share === true) {
+            $unique_url = Str::random(20);
+            $is_task_share = Task::where('share', $unique_url)->exists();
+        }
+        return $unique_url;
     }
 }
