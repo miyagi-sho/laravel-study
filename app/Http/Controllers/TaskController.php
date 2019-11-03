@@ -133,7 +133,7 @@ class TaskController extends Controller
     {
         $task = $this->task_business_logic->searchTaskByShare($share);
 
-        if($task === null){
+        if(is_null($task)){
             abort(404);
         }
 
