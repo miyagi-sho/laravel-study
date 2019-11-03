@@ -131,7 +131,7 @@ class TaskController extends Controller
      */
     public function publicTask(string $share)
     {
-        $task = $this->task_business_logic->searchTask($share);
+        $task = $this->task_business_logic->searchTaskByShare($share);
 
         if($task === null){
             abort(404);

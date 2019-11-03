@@ -36,7 +36,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      * @param $share
      * @return mixed
      */
-    public function searchTask($share){
+    public function searchTaskByShare($share){
         return Task::where('share', $share)->first();
     }
 }

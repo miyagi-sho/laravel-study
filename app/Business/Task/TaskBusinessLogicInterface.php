@@ -18,5 +18,5 @@ interface TaskBusinessLogicInterface
      * @param $share
      * @return mixed
      */
-    public function searchTask($share);
+    public function searchTaskByShare($share);
 }
