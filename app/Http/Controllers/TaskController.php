@@ -116,7 +116,7 @@ class TaskController extends Controller
     {
         $this->checkRelation($folder, $task);
 
-        if($task->share === null) {
+        if(is_null($task->share)) {
             $this->task_business_logic->randomShare($task);
         }
 
