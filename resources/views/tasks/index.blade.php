@@ -7,15 +7,15 @@
                <nav class="panel panel-default">
                    <div class="panel-heading">フォルダ</div>
                    <div class="panel-body">
-                       <a 
-                       href="{{ route('folders.create') }}" 
+                       <a
+                       href="{{ route('folders.create') }}"
                        class="btn btn-default btn-block">
                            フォルダを追加する
                        </a>
                    </div>
                    <div class="list-group">
                        @foreach($folders as $folder)
-                         <a href="{{ route('tasks.index', ['id' => $folder->id]) }}" 
+                         <a href="{{ route('tasks.index', ['id' => $folder->id]) }}"
                          class="list-group-item {{ $current_folder_id === $folder->id ? 'active' : '' }}"
                          >
                              {{ $folder->title }}
@@ -25,7 +25,7 @@
                </nav>
            </div>
            <div class="column col-md-8">
-               
+
                <!-- 以下にタスクが表示される　-->
                <div class="panel panel-default">
                    <div class="panel-heading">タスク</div>
@@ -54,9 +54,15 @@
                                   </td>
                                   <td>{{ $task->formatted_due_date }}</td>
                                   <td>
-                                    <a href="{{ route('tasks.edit', ['id' => $task->folder_id, 'task_id' => $task->id]) }}">
-                                    編集
-                                    </a>
+                                      <a href="#" class="shares">シェア</a>
+                                      <form class="shares-form" action="{{ route('tasks.share', ['id' => $task->folder_id, 'task_id' => $task->id]) }}" method="POST" style="display:none;">
+                                          @csrf
+                                      </form>
+                                  </td>
+                                  <td>
+                                    　<a href="{{ route('tasks.edit', ['id' => $task->folder_id, 'task_id' => $task->id]) }}">
+                                    　　　 編集
+                                    　</a>
                                   </td>
                               </tr>
                            @endforeach
@@ -65,5 +71,9 @@
                </div>
            </div>
        </div>
-   </div> 
+   </div>
+@endsection
+
+@section('scripts')
+    @include('share.task_share.scripts')
 @endsection

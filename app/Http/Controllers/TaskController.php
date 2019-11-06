@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Business\Task\TaskBusinessLogicInterface;
 use App\Folder;
 use App\Http\Requests\CreateTask;
 use App\Http\Requests\EditTask;
@@ -9,8 +10,14 @@ use App\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+
 class TaskController extends Controller
 {
+    public function __construct(TaskBusinessLogicInterface $task_business_logic)
+    {
+        $this->task_business_logic =  $task_business_logic;
+    }
+
     /**
      * タスク一覧
      * @param Folder $folder
@@ -20,17 +27,17 @@ class TaskController extends Controller
     {
         //ユーザーのフォルダを取得する
         $folders = Auth::user()->folders()->get();
-        
+
         //選ばれたフォルダに紐づくタスクを取得する
         $tasks = $folder->tasks()->get();
-        
+
         return view('tasks/index',[
             'folders' => $folders,
             'current_folder_id' => $folder->id,
             'tasks' => $tasks,
         ]);
     }
-    
+
     /**
      * タスク作成フォーム
      * @param Folder $folder
@@ -42,7 +49,7 @@ class TaskController extends Controller
             'folder_id' => $folder->id
         ]);
      }
-     
+
      /**
       * タスク作成
       * @param Folder $folder
@@ -54,14 +61,14 @@ class TaskController extends Controller
         $task = new Task();
         $task->title = $request->title;
         $task->due_date = $request->due_date;
-    
+
         $folder->tasks()->save($task);
-    
+
         return redirect()->route('tasks.index', [
             'id' => $folder->id,
         ]);
     }
-    
+
     /**
      * タスク編集フォーム
      * @param Folder $folder
@@ -71,12 +78,12 @@ class TaskController extends Controller
     public function showEditForm(Folder $folder, Task $task)
     {
         $this->checkRelation($folder, $task);
-        
+
         return view('tasks/edit', [
             'task' => $task,
         ]);
     }
-    
+
     /**
      * タスク編集
      * @param Folder $folder
@@ -87,17 +94,54 @@ class TaskController extends Controller
     public function edit(Folder $folder, Task $task, EditTask $request)
     {
         $this->checkRelation($folder, $task);
-        
+
         $task->title = $request->title;
         $task->status = $request->status;
         $task->due_date = $request->due_date;
         $task->save();
-        
+
         return redirect()->route('tasks.index', [
             'id' => $task->folder_id,
         ]);
     }
-    
+
+
+    /**
+     * シェアURL確認画面
+     * @param Folder $folder
+     * @param Task $task
+     * @return \Illuminate\View\View
+     */
+    public function share(Folder $folder, Task $task)
+    {
+        $this->checkRelation($folder, $task);
+
+        if(is_null($task->share)) {
+            $this->task_business_logic->randomShare($task);
+        }
+
+        return view('tasks/share', [
+            'task' => $task,
+        ]);
+    }
+
+    /**
+     * @param string $share
+     * @return \Illuminate\View\View
+     */
+    public function publicTask(string $share)
+    {
+        $task = $this->task_business_logic->searchTaskByShare($share);
+
+        if(is_null($task)){
+            abort(404);
+        }
+
+        return view('tasks/public',[
+            'task' => $task
+        ]);
+    }
+
     private function checkRelation(Folder $folder, Task $task)
     {
         if($folder->id !== $task->folder_id) {
