@@ -142,6 +142,15 @@ class TaskController extends Controller
         ]);
     }
 
+    public function showDetail(Folder $folder, Task $task)
+    {
+        $this->checkRelation($folder, $task);
+
+        return view('tasks/detail',[
+            'task' => $task
+        ]);
+    }
+
     private function checkRelation(Folder $folder, Task $task)
     {
         if($folder->id !== $task->folder_id) {
