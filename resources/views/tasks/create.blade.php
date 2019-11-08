@@ -28,6 +28,10 @@
                 <label for="due_date">期限</label>
                 <input type="text" class="form-control" name="due_date" id="due_date" value="{{ old('due_date') }}" />
               </div>
+              <div class="form-group">
+                  <label for="memo">メモ</label>
+                  <textarea class="form-control" name="memo" id="memo">{{ old('memo') }}</textarea>
+              </div>
               <div class="text-right">
                 <button type="submit" class="btn btn-primary">送信</button>
               </div>
