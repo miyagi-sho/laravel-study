@@ -25,6 +25,12 @@
                     </tbody>
                 </table>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">メモ</div>
+                <div class="panel-body">
+                    {{ $task->memo }}
+                </div>
+            </div>
         </div>
     </div>
 @endsection
