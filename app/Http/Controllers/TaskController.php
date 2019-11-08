@@ -61,6 +61,7 @@ class TaskController extends Controller
         $task = new Task();
         $task->title = $request->title;
         $task->due_date = $request->due_date;
+        $task->memo = $request->memo;
 
         $folder->tasks()->save($task);
 
