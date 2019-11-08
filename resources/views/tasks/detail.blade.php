@@ -24,11 +24,17 @@
                                 <td>
                                     　<a href="{{ route('tasks.edit', ['id' => $task->folder_id, 'task_id' => $task->id]) }}">
                                         　　　 編集
-                                        　</a>
+                                    　</a>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">メモ</div>
+                    <div class="panel-body">
+                        {{ $task->memo }}
+                    </div>
                 </div>
             </div>
         </div>
