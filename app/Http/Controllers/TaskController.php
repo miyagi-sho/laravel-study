@@ -9,6 +9,7 @@ use App\Http\Requests\EditTask;
 use App\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Storage;
 
 
 class TaskController extends Controller
@@ -62,6 +63,14 @@ class TaskController extends Controller
         $task->title = $request->title;
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
+
+        $image = $request->file('image');
+        $imageContents = file_get_contents($image->getRealPath());
+
+        $disk = Storage::disk('s3');
+        $disk->put($image->hashName(),$imageContents);
+        $image = $disk->url($image->hashName());
+        $task->image_path = $image;
 
         $folder->tasks()->save($task);
 
