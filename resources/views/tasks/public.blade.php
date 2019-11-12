@@ -4,6 +4,11 @@
     <div class="container">
         <div class="row">
             <div class="panel panel-default">
+                <div class="panel-body">
+                    <img src="{{ $task->image_path }}">
+                </div>
+            </div>
+            <div class="panel panel-default">
                 <div class="panel-heading">{{ $task->title }}</div>
                 <table class="table">
                     <tbody>
