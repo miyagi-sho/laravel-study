@@ -65,12 +65,8 @@ class TaskController extends Controller
         $task->memo = $request->memo;
 
         $image = $request->file('image');
-        $imageContents = file_get_contents($image->getRealPath());
-
-        $disk = Storage::disk('s3');
-        $disk->put($image->hashName(),$imageContents);
-        $image = $disk->url($image->hashName());
-        $task->image_path = $image;
+        $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+        $task->image_path = Storage::disk('s3')->url($path);
 
         $folder->tasks()->save($task);
 
@@ -158,7 +154,7 @@ class TaskController extends Controller
         $this->checkRelation($folder, $task);
 
         return view('tasks/detail',[
-            'task' => $task
+            'task' => $task,
         ]);
     }
 
