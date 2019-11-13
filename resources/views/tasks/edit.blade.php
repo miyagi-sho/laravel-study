@@ -20,7 +20,7 @@
             @endif
             <form
                 action="{{ route('tasks.edit', ['id' => $task->folder_id, 'task_id' => $task->id]) }}"
-                method="POST"
+                method="POST" enctype="multipart/form-data"
             >
               @csrf
               <div class="form-group">
@@ -51,10 +51,15 @@
                  <textarea class="form-control" name="memo" id="memo">{{ old('memo', $task->memo) }}</textarea>
               </div>
               <div class="panel panel-default">
-                  <div class="panel-heading">変更前の画像</div>
+                 <div class="panel-heading">変更前の画像</div>
                  <div class="panel-body">
                      <img src="{{ $task->image_path }}">
                  </div>
+                 <fieldset>
+                     <p>
+                         <input id="file" type="file" name="image" />
+                     </p>
+                 </fieldset>
               </div>
               <div class="text-right">
                 <button type="submit" class="btn btn-primary">送信</button>
