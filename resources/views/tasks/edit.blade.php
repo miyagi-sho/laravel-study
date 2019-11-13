@@ -53,13 +53,13 @@
               <div class="panel panel-default">
                  <div class="panel-heading">変更前の画像</div>
                  <div class="panel-body">
-                     <img src="{{ $task->image_path }}">
+                     <img class="img-responsive" src="{{ $task->image_path }}">
                  </div>
-                 <fieldset>
+                  <fieldset>
                      <p>
                          <input id="file" type="file" name="image" />
                      </p>
-                 </fieldset>
+                  </fieldset>
               </div>
               <div class="text-right">
                 <button type="submit" class="btn btn-primary">送信</button>
