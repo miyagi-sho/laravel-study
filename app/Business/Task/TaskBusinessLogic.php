@@ -2,8 +2,10 @@
 
 namespace App\Business\Task;
 
+use App\Folder;
 use App\Task;
 use Illuminate\Support\Str;
+use Storage;
 
 class TaskBusinessLogic implements TaskBusinessLogicInterface
 {
@@ -15,6 +17,40 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     public function __construct(Task $task)
     {
         $this->task = $task;
+    }
+
+
+
+    public function create($folder, $request)
+    {
+        $task = new Task();
+        $task->title = $request->title;
+        $task->due_date = $request->due_date;
+        $task->memo = $request->memo;
+
+        if($request->has('image')) {
+            $image = $request->file('image');
+            $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+            $task->image_path = Storage::disk('s3')->url($path);
+        }
+        $folder->tasks()->save($task);
+    }
+
+    public function edit($folder, $task, $request)
+    {
+        $this->checkRelation($folder, $task);
+
+        $task->title = $request->title;
+        $task->status = $request->status;
+        $task->due_date = $request->due_date;
+        $task->memo = $request->memo;
+
+        if($request->has('image')) {
+            $image = $request->file('image');
+            $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+            $task->image_path = Storage::disk('s3')->url($path);
+        }
+        $task->save();
     }
 
     /**
@@ -34,6 +70,13 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     public function searchTaskByShare($share){
         return Task::where('share', $share)->first();
+    }
+
+    private function checkRelation(Folder $folder, Task $task)
+    {
+        if($folder->id !== $task->folder_id) {
+            abort(404);
+        }
     }
 
     private function createUniqueUrlShare()
