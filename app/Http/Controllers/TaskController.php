@@ -105,6 +105,11 @@ class TaskController extends Controller
         $task->status = $request->status;
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
+
+        $image = $request->file('image');
+        $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+        $task->image_path = Storage::disk('s3')->url($path);
+
         $task->save();
 
         return redirect()->route('tasks.index', [
