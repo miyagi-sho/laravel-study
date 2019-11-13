@@ -53,7 +53,7 @@
               <div class="panel panel-default">
                  <div class="panel-heading">変更前の画像</div>
                  <div class="panel-body">
-                     <img class="img-responsive" src="{{ $task->image_path }}">
+                     <img class="img-responsive" src="{{ Storage::disk('s3')->url($task->image_path) }}">
                  </div>
                   <fieldset>
                      <p>
