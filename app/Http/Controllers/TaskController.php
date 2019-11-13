@@ -9,7 +9,6 @@ use App\Http\Requests\EditTask;
 use App\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Storage;
 
 
 class TaskController extends Controller
@@ -59,16 +58,7 @@ class TaskController extends Controller
       */
     public function create(Folder $folder, CreateTask $request)
     {
-        $task = new Task();
-        $task->title = $request->title;
-        $task->due_date = $request->due_date;
-        $task->memo = $request->memo;
-
-        $image = $request->file('image');
-        $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
-        $task->image_path = Storage::disk('s3')->url($path);
-
-        $folder->tasks()->save($task);
+        $this->task_business_logic->create( $folder, $request);
 
         return redirect()->route('tasks.index', [
             'id' => $folder->id,
@@ -99,18 +89,7 @@ class TaskController extends Controller
      */
     public function edit(Folder $folder, Task $task, EditTask $request)
     {
-        $this->checkRelation($folder, $task);
-
-        $task->title = $request->title;
-        $task->status = $request->status;
-        $task->due_date = $request->due_date;
-        $task->memo = $request->memo;
-
-        $image = $request->file('image');
-        $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
-        $task->image_path = Storage::disk('s3')->url($path);
-
-        $task->save();
+        $this->task_business_logic->edit( $folder, $task, $request);
 
         return redirect()->route('tasks.index', [
             'id' => $task->folder_id,
