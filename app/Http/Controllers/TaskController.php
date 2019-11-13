@@ -134,6 +134,7 @@ class TaskController extends Controller
 
         return view('tasks/share', [
             'task' => $task,
+            'folder' => $folder
         ]);
     }
 
@@ -141,17 +142,25 @@ class TaskController extends Controller
      * @param string $share
      * @return \Illuminate\View\View
      */
-    public function publicTask(string $share)
+    public function publicTask(Folder $folder, Task $task, string $share)
     {
+        $this->checkRelation($folder, $task);
+
         $task = $this->task_business_logic->searchTaskByShare($share);
 
         if(is_null($task)){
             abort(404);
         }
 
-        return view('tasks/public',[
-            'task' => $task
-        ]);
+        if($folder->user_id === Auth::id()){
+            return view('tasks/detail',[
+                'task' => $task,
+            ]);
+        }else {
+            return view('tasks/public', [
+                'task' => $task
+            ]);
+        }
     }
 
     public function showDetail(Folder $folder, Task $task)
