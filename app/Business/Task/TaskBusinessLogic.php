@@ -43,11 +43,13 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
 
-        if($request->has('image') &&
-            $exists = Storage::disk('s3')->exists($task->image_path)
-        ) {
-            Storage::disk('s3')->delete($task->image_path);
-        }
+//        if($request->has('image') &&
+//            $exists = Storage::disk('s3')->exists($task->image_path)
+//        ) {
+//            Storage::disk('s3')->delete($task->image_path);
+//        }
+
+        $this->deleteImage($task, $request);
 
         $this->uploadImage($task, $request);
 
@@ -78,6 +80,15 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         if($request->has('image')) {
             $image = $request->file('image');
             $task->image_path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+        }
+    }
+
+    private function deleteImage($task, $request)
+    {
+        if($request->has('image') &&
+            $exists = Storage::disk('s3')->exists($task->image_path)
+        ) {
+            Storage::disk('s3')->delete($task->image_path);
         }
     }
 
