@@ -27,7 +27,7 @@ class CreateTask extends FormRequest
             'title' => 'required|max:100',
             'due_date' => 'required|date|after_or_equal:today',
             'memo' => 'nullable|max:400',
-            'image_path' => 'nullable|file|image|max:4000'
+            'image' => 'nullable|file|image|max:4000'
         ];
     }
 
@@ -37,7 +37,7 @@ class CreateTask extends FormRequest
             'title' => 'タイトル',
             'due_date' => '期限日',
             'memo' => 'メモ',
-            'image_path' => '写真'
+            'image' => '画像'
         ];
     }
 
