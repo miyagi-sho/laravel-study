@@ -43,6 +43,12 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
 
+        if($request->has('image') &&
+            $exists = Storage::disk('s3')->exists($task->image_path)
+        ) {
+            Storage::disk('s3')->delete($task->image_path);
+        }
+
         $this->uploadImage($task, $request);
 
         $task->save();
@@ -71,8 +77,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     {
         if($request->has('image')) {
             $image = $request->file('image');
-            $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
-            $task->image_path = Storage::disk('s3')->url($path);
+            $task->image_path = Storage::disk('s3')->putFile('task_image', $image, 'public');
         }
     }
 
