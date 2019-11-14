@@ -19,8 +19,11 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $this->task = $task;
     }
 
-
-
+    /**
+     * @param Folder $folder
+     * @param \App\Http\Requests\CreateTask $request
+     * @return mixed|void
+     */
     public function create($folder, $request)
     {
         $task = new Task();
@@ -28,12 +31,17 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
 
-
         $this->uploadImage($task, $request);
 
         $folder->tasks()->save($task);
     }
 
+    /**
+     * @param Folder $folder
+     * @param Task $task
+     * @param \App\Http\Requests\EditTask $request
+     * @return mixed|void
+     */
     public function edit($folder, $task, $request)
     {
         $this->checkRelation($folder, $task);
@@ -43,12 +51,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
 
-//        if($request->has('image') &&
-//            $exists = Storage::disk('s3')->exists($task->image_path)
-//        ) {
-//            Storage::disk('s3')->delete($task->image_path);
-//        }
-
+        #元々保存されている画像データを削除
         $this->deleteImage($task, $request);
 
         $this->uploadImage($task, $request);
@@ -86,7 +89,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     private function deleteImage($task, $request)
     {
         if($request->has('image') &&
-            $exists = Storage::disk('s3')->exists($task->image_path)
+            Storage::disk('s3')->exists($task->image_path)
         ) {
             Storage::disk('s3')->delete($task->image_path);
         }
