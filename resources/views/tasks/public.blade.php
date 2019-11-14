@@ -3,7 +3,9 @@
 @section('content')
     <div class="container">
         <div class="row">
-            <img class="img-responsive" src="{{ Storage::disk('s3')->url($task->image_path) }}">
+            @if(Storage::disk('s3')->exists($task->image_path))
+                <img class="img-responsive" src="{{ Storage::disk('s3')->url($task->image_path) }}">
+            @endif
             <div class="panel panel-default">
                 <div class="panel-heading">{{ $task->title }}</div>
                 <table class="table">
