@@ -4,6 +4,7 @@ namespace App\Business\Task;
 
 use App\Folder;
 use App\Task;
+use Exception;
 use Illuminate\Support\Str;
 use Storage;
 
@@ -31,21 +32,18 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
 
-        $this->uploadImage($task, $request);
+        $task->image_path = $this->uploadImage($request);
 
         $folder->tasks()->save($task);
     }
 
     /**
-     * @param Folder $folder
      * @param Task $task
      * @param \App\Http\Requests\EditTask $request
      * @return mixed|void
      */
-    public function edit($folder, $task, $request)
+    public function edit($task, $request)
     {
-        $this->checkRelation($folder, $task);
-
         $task->title = $request->title;
         $task->status = $request->status;
         $task->due_date = $request->due_date;
@@ -54,7 +52,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         #元々保存されている画像データを削除
         $this->deleteImage($task, $request);
 
-        $this->uploadImage($task, $request);
+        $task->image_path = $this->uploadImage($request);
 
         $task->save();
     }
@@ -74,21 +72,55 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      * @param $share
      * @return mixed
      */
-    public function searchTaskByShare($share){
+    public function searchTaskByShare($share)
+    {
         return Task::where('share', $share)->first();
     }
 
-    private function uploadImage($task, $request)
+    /**
+     * @param $folder
+     * @param $task
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function faildCreateImage($folder, $task)
     {
-        if($request->has('image')) {
-            $image = $request->file('image');
-            $task->image_path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+        try {
+            if ($task->image_path === "") {
+                throw new Exception();
+            }
+        } catch (Exception $e)  {
+            return redirect()->route('tasks.create', [
+                'id' => $folder->id,
+            ])->withErrors('画像のアップロードに失敗しました。');
         }
+    }
+
+    public function faildEditImage($task)
+    {
+        try {
+            if ($task->image_path === "") {
+                throw new Exception();
+            }
+        } catch (Exception $e) {
+            return redirect()->route('tasks.edit', [
+                'id' => $task->folder_id,
+                'task_id' => $task->id,
+            ])->withErrors('画像のアップロードに失敗しました。');
+        }
+    }
+
+    private function uploadImage($request)
+    {
+        if ($request->has('image')) {
+            $image = $request->file('image');
+            $image = Storage::disk('s3')->putFile('task_image', $image, 'public');
+        }
+        return $image;
     }
 
     private function deleteImage($task, $request)
     {
-        if($request->has('image') &&
+        if ($request->has('image') &&
             Storage::disk('s3')->exists($task->image_path)
         ) {
             Storage::disk('s3')->delete($task->image_path);
@@ -98,17 +130,10 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     private function createUniqueUrlShare()
     {
         $is_task_share = true;
-        While($is_task_share === true) {
+        While ($is_task_share === true) {
             $unique_url = Str::random(20);
             $is_task_share = Task::where('share', $unique_url)->exists();
         }
         return $unique_url;
-    }
-
-    private function checkRelation(Folder $folder, Task $task)
-    {
-        if($folder->id !== $task->folder_id) {
-            abort(404);
-        }
     }
 }

@@ -31,7 +31,7 @@ class TaskController extends Controller
         //選ばれたフォルダに紐づくタスクを取得する
         $tasks = $folder->tasks()->get();
 
-        return view('tasks/index',[
+        return view('tasks/index', [
             'folders' => $folders,
             'current_folder_id' => $folder->id,
             'tasks' => $tasks,
@@ -45,8 +45,8 @@ class TaskController extends Controller
      */
      public function showCreateForm(Folder $folder)
      {
-        return view('tasks/create',[
-            'folder_id' => $folder->id
+        return view('tasks/create', [
+            'folder_id' => $folder->id,
         ]);
      }
 
@@ -58,7 +58,13 @@ class TaskController extends Controller
       */
     public function create(Folder $folder, CreateTask $request)
     {
-        $this->task_business_logic->create( $folder, $request);
+        $task = $this->task_business_logic->create($folder, $request);
+
+        $response = $this->task_business_logic->faildCreateImage($folder, $task);
+
+        if($response instanceof \Illuminate\Http\RedirectResponse){
+            return $response;
+        }
 
         return redirect()->route('tasks.index', [
             'id' => $folder->id,
@@ -73,7 +79,7 @@ class TaskController extends Controller
      */
     public function showEditForm(Folder $folder, Task $task)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
         return view('tasks/edit', [
             'task' => $task,
@@ -81,7 +87,6 @@ class TaskController extends Controller
     }
 
     /**
-     * タスク編集
      * @param Folder $folder
      * @param Task $task
      * @param EditTask $request
@@ -89,7 +94,15 @@ class TaskController extends Controller
      */
     public function edit(Folder $folder, Task $task, EditTask $request)
     {
-        $this->task_business_logic->edit( $folder, $task, $request);
+        $this->verifyRelation($folder, $task);
+
+        $this->task_business_logic->edit($task, $request);
+
+        $response = $this->task_business_logic->faildEditImage($task);
+
+        if($response instanceof \Illuminate\Http\RedirectResponse){
+            return $response;
+        }
 
         return redirect()->route('tasks.index', [
             'id' => $task->folder_id,
@@ -105,7 +118,7 @@ class TaskController extends Controller
      */
     public function share(Folder $folder, Task $task)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
         if(is_null($task->share)) {
             $this->task_business_logic->randomShare($task);
@@ -113,7 +126,7 @@ class TaskController extends Controller
 
         return view('tasks/share', [
             'task' => $task,
-            'folder' => $folder
+            'folder' => $folder,
         ]);
     }
 
@@ -123,7 +136,7 @@ class TaskController extends Controller
      */
     public function publicTask(Folder $folder, Task $task, string $share)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
         $task = $this->task_business_logic->searchTaskByShare($share);
 
@@ -131,27 +144,27 @@ class TaskController extends Controller
             abort(404);
         }
 
-        if($folder->user_id === Auth::id()){
+        if ($folder->user_id === Auth::id()) {
             return view('tasks/detail',[
                 'task' => $task,
             ]);
         }else {
             return view('tasks/public', [
-                'task' => $task
+                'task' => $task,
             ]);
         }
     }
 
     public function showDetail(Folder $folder, Task $task)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
         return view('tasks/detail',[
             'task' => $task,
         ]);
     }
 
-    private function checkRelation(Folder $folder, Task $task)
+    private function verifyRelation(Folder $folder, Task $task)
     {
         if($folder->id !== $task->folder_id) {
             abort(404);

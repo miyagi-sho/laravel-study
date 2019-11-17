@@ -17,12 +17,11 @@ interface TaskBusinessLogicInterface
     public function create($folder, $request);
 
     /**
-     * @param Folder $folder
      * @param Task $task
      * @param EditTask $request
      * @return mixed
      */
-    public function edit($folder, $task, $request);
+    public function edit($task, $request);
 
     /**
      * taskテーブルshareカラムをランダムで作成
@@ -30,7 +29,7 @@ interface TaskBusinessLogicInterface
      * @param $task
      * @return mixed
      */
-    public function randomShare($task);
+    public function randomShare($folder);
 
     /**
      * shareで1レコード取得
@@ -39,4 +38,17 @@ interface TaskBusinessLogicInterface
      * @return mixed
      */
     public function searchTaskByShare($share);
+
+    /**
+     * @param $folder
+     * @param $task
+     * @return mixed
+     */
+    public function faildCreateImage($folder, $task);
+
+    /**
+     * @param $task
+     * @return mixed
+     */
+    public function faildEditImage($task);
 }
