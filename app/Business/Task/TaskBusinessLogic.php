@@ -4,7 +4,6 @@ namespace App\Business\Task;
 
 use App\Folder;
 use App\Task;
-use Exception;
 use Illuminate\Support\Str;
 use Storage;
 
@@ -92,7 +91,8 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     {
         if ($request->has('image')) {
             $image = $request->file('image');
-            $image_path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+            $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+            $image_path = Storage::disk('s3')->url($path);
         } else {
             $image_path = $task->image_path;
         }
@@ -106,10 +106,12 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     private function deleteImage($task, $request)
     {
+        $image_path = parse_url($task->image_path, PHP_URL_PATH);
+
         if ($request->has('image') &&
-            Storage::disk('s3')->exists($task->image_path)
+            Storage::disk('s3')->exists($image_path)
         ) {
-            Storage::disk('s3')->delete($task->image_path);
+            Storage::disk('s3')->delete($image_path);
         }
     }
 
