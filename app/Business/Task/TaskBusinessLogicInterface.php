@@ -38,17 +38,4 @@ interface TaskBusinessLogicInterface
      * @return mixed
      */
     public function searchTaskByShare($share);
-
-    /**
-     * @param $folder
-     * @param $task
-     * @return mixed
-     */
-    public function faildCreateImage($folder, $task);
-
-    /**
-     * @param $task
-     * @return mixed
-     */
-    public function faildEditImage($task);
 }

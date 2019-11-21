@@ -32,9 +32,13 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         $task->due_date = $request->due_date;
         $task->memo = $request->memo;
 
-        $task->image_path = $this->uploadImage($request);
+        $task->image_path = $this->uploadImage($task, $request);
 
-        $folder->tasks()->save($task);
+        if ($task->image_path !== "") {
+            $folder->tasks()->save($task);
+        }
+
+        return $task;
     }
 
     /**
@@ -52,9 +56,11 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         #元々保存されている画像データを削除
         $this->deleteImage($task, $request);
 
-        $task->image_path = $this->uploadImage($request);
+        $task->image_path = $this->uploadImage($task, $request);
 
-        $task->save();
+        if ($task->image_path !== "") {
+            $task->save();
+        }
     }
 
     /**
@@ -78,46 +84,26 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     }
 
     /**
-     * @param $folder
      * @param $task
-     * @return \Illuminate\Http\RedirectResponse
+     * @param $request
+     * @return mixed
      */
-    public function faildCreateImage($folder, $task)
-    {
-        try {
-            if ($task->image_path === "") {
-                throw new Exception();
-            }
-        } catch (Exception $e)  {
-            return redirect()->route('tasks.create', [
-                'id' => $folder->id,
-            ])->withErrors('画像のアップロードに失敗しました。');
-        }
-    }
-
-    public function faildEditImage($task)
-    {
-        try {
-            if ($task->image_path === "") {
-                throw new Exception();
-            }
-        } catch (Exception $e) {
-            return redirect()->route('tasks.edit', [
-                'id' => $task->folder_id,
-                'task_id' => $task->id,
-            ])->withErrors('画像のアップロードに失敗しました。');
-        }
-    }
-
-    private function uploadImage($request)
+    private function uploadImage($task, $request)
     {
         if ($request->has('image')) {
             $image = $request->file('image');
-            $image = Storage::disk('s3')->putFile('task_image', $image, 'public');
+            $image_path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+        } else {
+            $image_path = $task->image_path;
         }
-        return $image;
+
+        return $image_path;
     }
 
+    /**
+     * @param $task
+     * @param $request
+     */
     private function deleteImage($task, $request)
     {
         if ($request->has('image') &&
@@ -127,6 +113,9 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
         }
     }
 
+    /**
+     * @return string
+     */
     private function createUniqueUrlShare()
     {
         $is_task_share = true;

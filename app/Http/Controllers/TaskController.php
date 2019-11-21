@@ -7,6 +7,7 @@ use App\Folder;
 use App\Http\Requests\CreateTask;
 use App\Http\Requests\EditTask;
 use App\Task;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -60,15 +61,15 @@ class TaskController extends Controller
     {
         $task = $this->task_business_logic->create($folder, $request);
 
-        $response = $this->task_business_logic->faildCreateImage($folder, $task);
+        $response = $this->failedUpdateImage($task);
 
-        if($response instanceof \Illuminate\Http\RedirectResponse){
+        if ($response instanceof \Illuminate\Http\RedirectResponse) {
             return $response;
+        } else {
+            return redirect()->route('tasks.index', [
+                'id' => $task->folder_id,
+            ]);
         }
-
-        return redirect()->route('tasks.index', [
-            'id' => $folder->id,
-        ]);
     }
 
     /**
@@ -98,15 +99,15 @@ class TaskController extends Controller
 
         $this->task_business_logic->edit($task, $request);
 
-        $response = $this->task_business_logic->faildEditImage($task);
+        $response = $this->failedUpdateImage($task);
 
         if($response instanceof \Illuminate\Http\RedirectResponse){
             return $response;
+        } else {
+            return redirect()->route('tasks.index', [
+                'id' => $task->folder_id,
+            ]);
         }
-
-        return redirect()->route('tasks.index', [
-            'id' => $task->folder_id,
-        ]);
     }
 
 
@@ -155,6 +156,11 @@ class TaskController extends Controller
         }
     }
 
+    /**
+     * @param Folder $folder
+     * @param Task $task
+     * @return \Illuminate\View\View
+     */
     public function showDetail(Folder $folder, Task $task)
     {
         $this->verifyRelation($folder, $task);
@@ -164,6 +170,25 @@ class TaskController extends Controller
         ]);
     }
 
+    /**
+     * @param $task
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function failedUpdateImage($task)
+    {
+        try {
+            if ($task->image_path === "") {
+                throw new Exception();
+            }
+        } catch (Exception $e) {
+            return back()->withErrors('画像のアップロードに失敗しました。');
+        }
+    }
+
+    /**
+     * @param Folder $folder
+     * @param Task $task
+     */
     private function verifyRelation(Folder $folder, Task $task)
     {
         if($folder->id !== $task->folder_id) {
