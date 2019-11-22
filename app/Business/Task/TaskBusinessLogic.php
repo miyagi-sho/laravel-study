@@ -4,6 +4,7 @@ namespace App\Business\Task;
 
 use App\Folder;
 use App\Task;
+use Exception;
 use Illuminate\Support\Str;
 use Storage;
 
@@ -22,7 +23,8 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     /**
      * @param Folder $folder
      * @param \App\Http\Requests\CreateTask $request
-     * @return mixed|void
+     * @return Task|mixed
+     * @throws Exception
      */
     public function create($folder, $request)
     {
@@ -44,6 +46,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      * @param Task $task
      * @param \App\Http\Requests\EditTask $request
      * @return mixed|void
+     * @throws Exception
      */
     public function edit($task, $request)
     {
@@ -86,12 +89,16 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      * @param $task
      * @param $request
      * @return mixed
+     * @throws Exception
      */
     private function uploadImage($task, $request)
     {
         if ($request->has('image')) {
             $image = $request->file('image');
             $path = Storage::disk('s3')->putFile('task_image', $image, 'public');
+            if (empty($path)) {
+                throw new Exception('画像のアップロードに失敗しました。');
+            }
             $image_path = Storage::disk('s3')->url($path);
         } else {
             $image_path = $task->image_path;

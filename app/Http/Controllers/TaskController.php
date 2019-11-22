@@ -59,17 +59,17 @@ class TaskController extends Controller
       */
     public function create(Folder $folder, CreateTask $request)
     {
-        $task = $this->task_business_logic->create($folder, $request);
-
-        $response = $this->failedUpdateImage($task);
-
-        if ($response instanceof \Illuminate\Http\RedirectResponse) {
-            return $response;
-        } else {
-            return redirect()->route('tasks.index', [
-                'id' => $task->folder_id,
-            ]);
+        try {
+            // タスクを作成しようとした時(画像をアップロードしようとしたとき)に例外が起こる可能性がある
+            $task = $this->task_business_logic->create($folder, $request);
+        } catch(Exception $e) {
+            // 例外が起きたら, エラーメッセージを流す
+            return back()->withErrors('画像のアップロードに失敗しました。');
         }
+
+        return redirect()->route('tasks.index', [
+            'id' => $task->folder_id,
+        ]);
     }
 
     /**
@@ -97,17 +97,17 @@ class TaskController extends Controller
     {
         $this->verifyRelation($folder, $task);
 
-        $this->task_business_logic->edit($task, $request);
-
-        $response = $this->failedUpdateImage($task);
-
-        if($response instanceof \Illuminate\Http\RedirectResponse){
-            return $response;
-        } else {
-            return redirect()->route('tasks.index', [
-                'id' => $task->folder_id,
-            ]);
+        try {
+            // タスクを作成しようとした時(画像をアップロードしようとしたとき)に例外が起こる可能性がある
+            $this->task_business_logic->edit($task, $request);
+        } catch(Exception $e) {
+            // 例外が起きたら, エラーメッセージを流す
+            return back()->withErrors('画像のアップロードに失敗しました。');
         }
+
+        return redirect()->route('tasks.index', [
+            'id' => $folder->id,
+        ]);
     }
 
 
@@ -168,21 +168,6 @@ class TaskController extends Controller
         return view('tasks/detail',[
             'task' => $task,
         ]);
-    }
-
-    /**
-     * @param $task
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function failedUpdateImage($task)
-    {
-        try {
-            if ($task->image_path === "") {
-                throw new Exception();
-            }
-        } catch (Exception $e) {
-            return back()->withErrors('画像のアップロードに失敗しました。');
-        }
     }
 
     /**
