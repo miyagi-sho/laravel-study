@@ -26,21 +26,25 @@ class CreateTask extends FormRequest
         return [
             'title' => 'required|max:100',
             'due_date' => 'required|date|after_or_equal:today',
+            'memo' => 'nullable|max:400',
+            'image' => 'nullable|file|image|max:4000'
         ];
     }
-    
+
     public function attributes()
     {
         return[
             'title' => 'タイトル',
             'due_date' => '期限日',
+            'memo' => 'メモ',
+            'image' => '画像'
         ];
     }
-    
+
     public function messages()
     {
         return[
-            
+
             // キーでメッセージが表示されるべきルールを指定する。
             // ドット区切りで左側が項目、右側がルールを意味する。
             'due_date.after_or_equal' => ':attribute には今日以降の日付を入力してください。',

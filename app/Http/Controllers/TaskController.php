@@ -7,6 +7,7 @@ use App\Folder;
 use App\Http\Requests\CreateTask;
 use App\Http\Requests\EditTask;
 use App\Task;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,7 +32,7 @@ class TaskController extends Controller
         //選ばれたフォルダに紐づくタスクを取得する
         $tasks = $folder->tasks()->get();
 
-        return view('tasks/index',[
+        return view('tasks/index', [
             'folders' => $folders,
             'current_folder_id' => $folder->id,
             'tasks' => $tasks,
@@ -45,8 +46,8 @@ class TaskController extends Controller
      */
      public function showCreateForm(Folder $folder)
      {
-        return view('tasks/create',[
-            'folder_id' => $folder->id
+        return view('tasks/create', [
+            'folder_id' => $folder->id,
         ]);
      }
 
@@ -58,14 +59,16 @@ class TaskController extends Controller
       */
     public function create(Folder $folder, CreateTask $request)
     {
-        $task = new Task();
-        $task->title = $request->title;
-        $task->due_date = $request->due_date;
-
-        $folder->tasks()->save($task);
+        try {
+            // タスクを作成しようとした時(画像をアップロードしようとしたとき)に例外が起こる可能性がある
+            $task = $this->task_business_logic->create($folder, $request);
+        } catch(Exception $e) {
+            // 例外が起きたら, エラーメッセージを流す
+            return back()->withErrors('画像のアップロードに失敗しました。');
+        }
 
         return redirect()->route('tasks.index', [
-            'id' => $folder->id,
+            'id' => $task->folder_id,
         ]);
     }
 
@@ -77,7 +80,7 @@ class TaskController extends Controller
      */
     public function showEditForm(Folder $folder, Task $task)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
         return view('tasks/edit', [
             'task' => $task,
@@ -85,7 +88,6 @@ class TaskController extends Controller
     }
 
     /**
-     * タスク編集
      * @param Folder $folder
      * @param Task $task
      * @param EditTask $request
@@ -93,15 +95,18 @@ class TaskController extends Controller
      */
     public function edit(Folder $folder, Task $task, EditTask $request)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
-        $task->title = $request->title;
-        $task->status = $request->status;
-        $task->due_date = $request->due_date;
-        $task->save();
+        try {
+            // タスクを作成しようとした時(画像をアップロードしようとしたとき)に例外が起こる可能性がある
+            $this->task_business_logic->edit($task, $request);
+        } catch(Exception $e) {
+            // 例外が起きたら, エラーメッセージを流す
+            return back()->withErrors('画像のアップロードに失敗しました。');
+        }
 
         return redirect()->route('tasks.index', [
-            'id' => $task->folder_id,
+            'id' => $folder->id,
         ]);
     }
 
@@ -114,7 +119,7 @@ class TaskController extends Controller
      */
     public function share(Folder $folder, Task $task)
     {
-        $this->checkRelation($folder, $task);
+        $this->verifyRelation($folder, $task);
 
         if(is_null($task->share)) {
             $this->task_business_logic->randomShare($task);
@@ -122,6 +127,7 @@ class TaskController extends Controller
 
         return view('tasks/share', [
             'task' => $task,
+            'folder' => $folder,
         ]);
     }
 
@@ -129,20 +135,46 @@ class TaskController extends Controller
      * @param string $share
      * @return \Illuminate\View\View
      */
-    public function publicTask(string $share)
+    public function publicTask(Folder $folder, Task $task, string $share)
     {
+        $this->verifyRelation($folder, $task);
+
         $task = $this->task_business_logic->searchTaskByShare($share);
 
         if(is_null($task)){
             abort(404);
         }
 
-        return view('tasks/public',[
-            'task' => $task
+        if ($folder->user_id === Auth::id()) {
+            return view('tasks/detail',[
+                'task' => $task,
+            ]);
+        }else {
+            return view('tasks/public', [
+                'task' => $task,
+            ]);
+        }
+    }
+
+    /**
+     * @param Folder $folder
+     * @param Task $task
+     * @return \Illuminate\View\View
+     */
+    public function showDetail(Folder $folder, Task $task)
+    {
+        $this->verifyRelation($folder, $task);
+
+        return view('tasks/detail',[
+            'task' => $task,
         ]);
     }
 
-    private function checkRelation(Folder $folder, Task $task)
+    /**
+     * @param Folder $folder
+     * @param Task $task
+     */
+    private function verifyRelation(Folder $folder, Task $task)
     {
         if($folder->id !== $task->folder_id) {
             abort(404);

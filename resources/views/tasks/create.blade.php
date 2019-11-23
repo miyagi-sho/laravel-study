@@ -18,7 +18,9 @@
                 @endforeach
               </div>
             @endif
-            <form action="{{ route('tasks.create', ['id' => $folder_id]) }}" method="POST">
+            <form action="{{ route('tasks.create', ['id' => $folder_id]) }}"
+                  method="POST" enctype="multipart/form-data"
+            >
               @csrf
               <div class="form-group">
                 <label for="title">タイトル</label>
@@ -28,8 +30,17 @@
                 <label for="due_date">期限</label>
                 <input type="text" class="form-control" name="due_date" id="due_date" value="{{ old('due_date') }}" />
               </div>
+              <div class="form-group">
+                  <label for="memo">メモ</label>
+                  <textarea class="form-control" name="memo" id="memo">{{ old('memo') }}</textarea>
+              </div>
+                <fieldset>
+                    <p>
+                        <input id="file" type="file" name="image" />
+                    </p>
+                </fieldset>
               <div class="text-right">
-                <button type="submit" class="btn btn-primary">送信</button>
+                  <button type="submit" class="btn btn-primary">送信</button>
               </div>
             </form>
           </div>

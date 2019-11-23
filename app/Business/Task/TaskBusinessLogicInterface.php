@@ -2,15 +2,34 @@
 
 namespace App\Business\Task;
 
+use App\Folder;
+use App\Http\Requests\CreateTask;
+use App\Http\Requests\EditTask;
+use App\Task;
+
 interface TaskBusinessLogicInterface
 {
     /**
-     * taskテーブルをランダムで作成
+     * @param Folder $folder
+     * @param CreateTask $request
+     * @return mixed
+     */
+    public function create($folder, $request);
+
+    /**
+     * @param Task $task
+     * @param EditTask $request
+     * @return mixed
+     */
+    public function edit($task, $request);
+
+    /**
+     * taskテーブルshareカラムをランダムで作成
      *
      * @param $task
      * @return mixed
      */
-    public function randomShare($task);
+    public function randomShare($folder);
 
     /**
      * shareで1レコード取得

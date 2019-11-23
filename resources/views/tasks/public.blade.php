@@ -3,28 +3,30 @@
 @section('content')
     <div class="container">
         <div class="row">
+            <img class="img-responsive" src="{{ $task->image_path }}">
             <div class="panel panel-default">
-                <div class="panel-heading">タスク</div>
+                <div class="panel-heading">{{ $task->title }}</div>
                 <table class="table">
-                    <thead>
-                    <tr>
-                        <th>タイトル</th>
-                        <th>状態</th>
-                        <th>期限</th>
-                        <th></th>
-                    </tr>
-                    </thead>
                     <tbody>
                         <tr>
-                            <td>{{ $task->title }}</td>
                             <td>
-                                <span class="label {{ $task->status_class }}">{{ $task->status_label }}</span>
+                                状態：<span class="label {{ $task->status_class }}">{{ $task->status_label }}</span>
                             </td>
-                            <td>{{ $task->formatted_due_date }}</td>
+                            <td>
+                                期限：{{ $task->formatted_due_date }}
+                            </td>
+                            @yield('author_menu')
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">メモ</div>
+                <div class="panel-body">
+                    {{ $task->memo }}
+                </div>
+            </div>
         </div>
+        @yield('back_tasks_index')
     </div>
 @endsection

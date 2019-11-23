@@ -27,6 +27,8 @@ Route::group(['middleware' => 'auth'], function(){
             Route::get('/folders/{folder}/tasks/create', 'TaskController@showCreateForm')->name('tasks.create');
             Route::post('/folders/{folder}/tasks/create', 'TaskController@create');
 
+            Route::get('/folders/{folder}/tasks/{task}', 'TaskController@showDetail')->name('tasks.detail');
+
             Route::get('/folders/{folder}/tasks/{task}/edit', 'TaskController@showEditForm')->name('tasks.edit');
             Route::post('/folders/{folder}/tasks/{task}/edit', 'TaskController@edit');
 
@@ -34,6 +36,6 @@ Route::group(['middleware' => 'auth'], function(){
         });
 });
 
-Route::get('/tasks/{share}', 'TaskController@publicTask')->name('tasks.public');
+Route::get('/folders/{folder}/tasks/{task}/share/{share}', 'TaskController@publicTask')->name('tasks.public');
 
 Auth::routes();
