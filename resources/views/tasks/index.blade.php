@@ -20,7 +20,7 @@
                          >
                              {{ $folder->title }}
                          </a>
-                    @endforeach
+                       @endforeach
                    </div>
                </nav>
            </div>
