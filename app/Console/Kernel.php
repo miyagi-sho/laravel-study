@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('reminder:unfinish-task')->everyMinute();
+        $schedule->command('reminder:unfinish-task')->dailyAt('13:00');
     }
 
     /**

@@ -43,10 +43,9 @@ class TaskReminder extends Command
      */
     public function handle()
     {
-//        $date = Carbon::tomorrow();
-//        $date = $date->format('Y-m-d');
-        $date = '2019-12-5';
-        //明日までの未完了タスクを探し出す。
+        //翌日までのタスクを探し出す。
+        $date = Carbon::tomorrow();
+        $date = $date->format('Y-m-d');
         $tasks = Task::where('due_date', '=', $date)
             ->where('status', '1')
             ->orWhere('status', '2')
@@ -59,7 +58,7 @@ class TaskReminder extends Command
                 $folders = Folder::where('id', $task->folder_id)->get();
             } else {
                 $folder = Folder::where('id', $task->folder_id)->first();
-                //$folders内に同一フォルダがなければ、$foldersに追加する。
+                //$folders内に同じfolderがなければ、$foldersに追加する。
                 $folders_id = [];
                 for($i = 0; $i < count($folders); $i++){
                     $id = $folders[$i]->id;
@@ -78,7 +77,7 @@ class TaskReminder extends Command
                 $users = User::where('id', $folder->user_id)->get();
             } else {
                 $user = User::where('id', $folder->user_id)->first();
-                //$users内に同一フォルダがなければ、$usersに追加する。
+                //$users内に同じuserがいなければ、$usersに追加する。
                 $users_id = [];
                 for($i = 0; $i < count($users); $i++){
                     $id = $users[$i]->id;
@@ -92,29 +91,26 @@ class TaskReminder extends Command
 
         //ユーザーごとに情報を渡し、メールを送信
         foreach ($users as $user) {
-            $folder = [];
-            foreach ($folders as $f) {
-                if ($f->user_id === $user->id) {
-                    $folder[] = $f;
+            //未完了タスクを持つフォルダをuserごとに処理する
+            $reminder_folders = [];
+            foreach ($folders as $folder) {
+                if ($folder->user_id === $user->id) {
+                    $reminder_folders[] = $folder;
                 }
             }
 
-            $task = [];
-            for ($i = 0; $i < count($folder); $i++) {
-                    $task[$i] = Task::where('folder_id', $folder[$i]->id)
+            //未完了タスクをフォルダごとに取得する
+            $reminder_tasks = [];
+            for ($i = 0; $i < count($reminder_folders); $i++) {
+                    $reminder_tasks[$i] = Task::where('folder_id', $reminder_folders[$i]->id)
                         ->where('due_date', '=', $date)
                         ->where('status', '1')
                         ->orWhere('status', '2')
                         ->get();
             }
-            Mail::to($user)->send(new BecomeAtOneInTheAfternoon($user, $folder, $task));
+
+            //メールを送信
+            Mail::to($user)->send(new BecomeAtOneInTheAfternoon($user, $reminder_folders, $reminder_tasks));
         }
-
-//        for ($i = 0; $i < count($task); $i++) {
-//            echo $task[$i];
-//        }
-
-//        echo $task;
-//        echo $folders[0]->id;
     }
 }

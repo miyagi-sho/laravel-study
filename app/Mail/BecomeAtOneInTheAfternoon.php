@@ -12,19 +12,19 @@ class BecomeAtOneInTheAfternoon extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
-    public $folder;
-    public $task;
+    public $folders;
+    public $tasks;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($user, $folder, $task)
+    public function __construct($user, $reminder_folders, $reminder_tasks)
     {
         $this->user = $user;
-        $this->folder = $folder;
-        $this->task = $task;
+        $this->folders = $reminder_folders;
+        $this->tasks = $reminder_tasks;
     }
 
     /**
