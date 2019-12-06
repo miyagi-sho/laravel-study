@@ -10,9 +10,4 @@ class Folder extends Model
     {
         return $this->hasMany('App\Task');
     }
-
-//    public function users()
-//    {
-//        return $this->belongsTo('App\User');
-//    }
 }
