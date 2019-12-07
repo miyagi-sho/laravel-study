@@ -17,6 +17,12 @@ class Task extends Model
         3 => ['label' => '完了', 'class' => ''],
     ];
 
+    const STATUS_NAME = [
+        'not_start' => 1,
+        'start' => 2,
+        'finish' => 3,
+    ];
+
     /**
      * 状態のラベル
      * @return string
@@ -63,9 +69,4 @@ class Task extends Model
         return Carbon::createFromFormat('Y-m-d', $this->attributes['due_date'])
             ->format('Y/m/d');
     }
-
-//    public function folders()
-//    {
-//        return $this->belongsTo('App\Folder');
-//    }
 }

@@ -44,12 +44,11 @@ class TaskReminder extends Command
     public function handle()
     {
         //翌日までのタスクを探し出す。
-//        $date = Carbon::tomorrow();
-//        $date = $date->format('Y-m-d');
-        $date = '2019-12-7';
+        $date = Carbon::tomorrow();
+        $date = $date->format('Y-m-d');
         $tasks = Task::where('due_date', '=', $date)
-            ->where('status', '1')
-            ->orWhere('status', '2')
+            ->where('status', Task::STATUS_NAME['not_start'])
+            ->orWhere('status', Task::STATUS_NAME['start'])
             ->get();
 
         //未完了タスクを含むフォルダを探し出す。
@@ -67,7 +66,7 @@ class TaskReminder extends Command
             $id = $folder->user_id;
             $users_ids[] = $id;
         }
-        $users_id = array_unique($users_ids);
+        $users_ids = array_unique($users_ids);
         $users = User::whereIn('id', $users_ids)->get();
 
         //ユーザーごとに情報を渡し、メールを送信
