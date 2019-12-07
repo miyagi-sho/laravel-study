@@ -81,13 +81,18 @@ class TaskReminder extends Command
             }
 
             //未完了タスクをフォルダごとに取得する
+//            $reminder_tasks = [];
+//            for ($i = 0; $i < count($reminder_folders); $i++) {
+//                    $reminder_tasks[$i] = Task::where('folder_id', $reminder_folders[$i]->id)
+//                        ->where('due_date', '=', $date)
+//                        ->where('status', '1')
+//                        ->orWhere('status', '2')
+//                        ->get();
+//            }
+
             $reminder_tasks = [];
             for ($i = 0; $i < count($reminder_folders); $i++) {
-                    $reminder_tasks[$i] = Task::where('folder_id', $reminder_folders[$i]->id)
-                        ->where('due_date', '=', $date)
-                        ->where('status', '1')
-                        ->orWhere('status', '2')
-                        ->get();
+                $reminder_tasks[$i] = $tasks->where('folder_id', $reminder_folders[$i]->id);
             }
 
             //メールを送信
