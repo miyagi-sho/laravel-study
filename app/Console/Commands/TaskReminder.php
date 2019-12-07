@@ -44,40 +44,39 @@ class TaskReminder extends Command
     public function handle()
     {
         //翌日までのタスクを探し出す。
-        $date = Carbon::tomorrow();
-        $date = $date->format('Y-m-d');
+//        $date = Carbon::tomorrow();
+//        $date = $date->format('Y-m-d');
+        $date = '2019-12-7';
         $tasks = Task::where('due_date', '=', $date)
             ->where('status', '1')
             ->orWhere('status', '2')
             ->get();
 
         //未完了タスクを含むフォルダを探し出す。
-        $folders_id = [];
+        $folders_ids = [];
         foreach ($tasks as $task) {
             $id = $task->folder_id;
-            $folders_id[] = $id;
+            $folders_ids[] = $id;
         }
-        $folders_id = array_unique($folders_id);
-        $folders = Folder::whereIn('id', $folders_id)->get();
+        $folders_ids = array_unique($folders_ids);
+        $folders = Folder::whereIn('id', $folders_ids)->get();
 
         //上記フォルダのユーザーを探し出す。
-        $users_id = [];
+        $users_ids = [];
         foreach ($folders as $folder) {
             $id = $folder->user_id;
-            $users_id[] = $id;
+            $users_ids[] = $id;
         }
-        $users_id = array_unique($users_id);
-        $users = User::whereIn('id', $users_id)->get();
+        $users_id = array_unique($users_ids);
+        $users = User::whereIn('id', $users_ids)->get();
 
         //ユーザーごとに情報を渡し、メールを送信
         foreach ($users as $user) {
             //未完了タスクを持つフォルダをuserごとに処理する
             $reminder_folders = [];
-            $reminder_folders_id = [];
             foreach ($folders as $folder) {
                 if ($folder->user_id === $user->id) {
                     $reminder_folders[] = $folder;
-                    $reminder_folders_id[] = $folder->id;
                 }
             }
 
