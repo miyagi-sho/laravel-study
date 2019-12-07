@@ -4,7 +4,7 @@
 </p>
 <div>
     @for ($i = 0; $i < count($folders); $i++)
-        {{ $folders[$i]->title }} <br>
+        <b>{{ $folders[$i]->title }} </b><br>
         @foreach( $tasks[$i] as $task)
             {{ $task->title }} <br>
         @endforeach
