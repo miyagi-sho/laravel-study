@@ -6,7 +6,9 @@
     @for ($i = 0; $i < count($folders); $i++)
         <b>{{ $folders[$i]->title }} </b><br>
         @foreach( $tasks[$i] as $task)
-            {{ $task->title }} <br>
+            @foreach($task as $t)
+                {{ $t->title }} <br>
+            @endforeach
         @endforeach
         <br>
     @endfor

@@ -46,6 +46,8 @@ class TaskReminder extends Command
         //翌日までのタスクを探し出す。
         $date = Carbon::tomorrow();
         $date = $date->format('Y-m-d');
+//        検証用
+//        $date = '2019-12-8';
         $tasks = Task::where('due_date', '=', $date)
             ->where('status', Task::STATUS_NAME['not_start'])
             ->orWhere('status', Task::STATUS_NAME['start'])
@@ -80,21 +82,21 @@ class TaskReminder extends Command
             }
 
             //未完了タスクをフォルダごとに取得する
-//            $reminder_tasks = [];
-//            for ($i = 0; $i < count($reminder_folders); $i++) {
-//                    $reminder_tasks[$i] = Task::where('folder_id', $reminder_folders[$i]->id)
-//                        ->where('due_date', '=', $date)
-//                        ->where('status', '1')
-//                        ->orWhere('status', '2')
-//                        ->get();
-//            }
-
             $reminder_tasks = [];
             for ($i = 0; $i < count($reminder_folders); $i++) {
-                $reminder_tasks[$i] = $tasks->where('folder_id', $reminder_folders[$i]->id);
+                $reminder_tasks[$i] = [];
+                for ($t = 0; $t < count($tasks); $t++) {
+                    $date = array_filter(array($tasks[$t]), function($task) use($reminder_folders, $i) {
+                        return $task->folder_id === $reminder_folders[$i]->id;
+                    });
+
+                    if ($date) {
+                        array_push($reminder_tasks[$i], $date);
+                    }
+                }
             }
 
-            //メールを送信
+//            メールを送信
             Mail::to($user)->send(new BecomeAtOneInTheAfternoon($user, $reminder_folders, $reminder_tasks));
         }
     }
