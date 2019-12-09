@@ -86,12 +86,12 @@ class TaskReminder extends Command
             for ($i = 0; $i < count($reminder_folders); $i++) {
                 $reminder_tasks[$i] = [];
                 for ($t = 0; $t < count($tasks); $t++) {
-                    $date = array_filter(array($tasks[$t]), function($task) use($reminder_folders, $i) {
+                    $reminder_task = array_filter(array($tasks[$t]), function($task) use($reminder_folders, $i) {
                         return $task->folder_id === $reminder_folders[$i]->id;
                     });
 
-                    if ($date) {
-                        array_push($reminder_tasks[$i], $date);
+                    if ($reminder_task) {
+                        $reminder_tasks[$i][] = $reminder_task;
                     }
                 }
             }
