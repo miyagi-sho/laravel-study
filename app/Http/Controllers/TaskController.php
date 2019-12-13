@@ -170,6 +170,11 @@ class TaskController extends Controller
         ]);
     }
 
+    public function search()
+    {
+        return view('tasks.search');
+    }
+
     /**
      * @param Folder $folder
      * @param Task $task
