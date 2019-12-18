@@ -40,4 +40,8 @@ Route::group(['middleware' => 'auth'], function(){
 
 Route::get('/folders/{folder}/tasks/{task}/share/{share}', 'TaskController@publicTask')->name('tasks.public');
 
+Route::get('search', function () {
+    return App\Task::search(\request('q'))->paginate();
+});
+
 Auth::routes();

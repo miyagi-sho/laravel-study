@@ -165,6 +165,7 @@ return [
         /*
          * Package Service Providers...
          */
+        App\Providers\ElasticsearchServiceProvider::class,
 
         /*
          * Application Service Providers...
