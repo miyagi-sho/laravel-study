@@ -47,7 +47,11 @@ class TaskReminder extends Command
         $date = Carbon::tomorrow();
         $date = $date->format('Y-m-d');
 //        検証用
-//        $date = '2019-12-8';
+//        $date = '2025-12-8';
+        //ここがちょっとおかしい。
+        //多分、日付が一致していて、未着手のタスクと
+        //日付かかわらず、着手中のタスクを
+        //取得する形になっている。
         $tasks = Task::where('due_date', '=', $date)
             ->where('status', Task::STATUS_NAME['not_start'])
             ->orWhere('status', Task::STATUS_NAME['start'])

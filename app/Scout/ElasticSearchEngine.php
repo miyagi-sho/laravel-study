@@ -235,6 +235,6 @@ class ElasticsearchEngine extends Engine
      */
     public function flush($model)
     {
-        // TODO: Implement flush() method.
+        //
     }
 }
