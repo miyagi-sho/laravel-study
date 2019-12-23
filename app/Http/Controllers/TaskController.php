@@ -170,9 +170,30 @@ class TaskController extends Controller
         ]);
     }
 
-    public function search()
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function search(Request $request)
     {
-        return view('tasks.search');
+        $keyword = $request->keyword;
+        try{
+            if (empty($keyword)) {
+                throw new Exception('検索には検索ワードが必要です。');
+            }
+        } catch(Exception $e) {
+            return view('tasks.search', [
+                'search_tasks' => null,
+                ]
+            )->withErrors('検索には検索ワードが必要です。');
+        }
+
+        $search_tasks = Task::search($keyword)
+            ->get();
+        return view('tasks.search', [
+            'search_tasks' => $search_tasks,
+            'keyword' => $keyword,
+        ]);
     }
 
     /**
