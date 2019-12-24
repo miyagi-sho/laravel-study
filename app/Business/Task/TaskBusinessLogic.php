@@ -4,7 +4,9 @@ namespace App\Business\Task;
 
 use App\Folder;
 use App\Task;
+use App\TasksFullText;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Storage;
 
@@ -84,6 +86,37 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     {
         return Task::where('share', $share)->first();
     }
+
+    /**
+     * @param $keywords
+     * @return mixed
+     */
+    public function searchFullTask($keywords)
+    {
+        $keywords_array = explode("　", $keywords);
+
+        $search_tasks = TasksFullText::join('tasks', 'tasks_full_texts.task_id', '=', 'tasks.id')
+            ->join('folders', 'tasks_full_texts.folder_id', '=', 'folders.id')
+            ->select('folders.user_id',
+                'tasks_full_texts.folder_id',
+                'tasks_full_texts.task_id',
+                'folders.title as folder_title',
+                'tasks.title as task_title',
+                'tasks_full_texts.full_text')
+            ->where('user_id', Auth::id())
+            ->where(function ($query) use($keywords_array) {
+                foreach ($keywords_array as $keyword) {
+                    $query->where('full_text', 'like', "%{$keyword}%");
+                }
+            })->select('tasks_full_texts.folder_id',
+                'tasks_full_texts.task_id',
+                'folders.title as folder_title',
+                'tasks.title as task_title')
+            ->get();
+
+        return $search_tasks;
+    }
+
 
     /**
      * @param $task

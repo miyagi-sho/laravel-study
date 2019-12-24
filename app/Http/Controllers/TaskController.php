@@ -176,9 +176,9 @@ class TaskController extends Controller
      */
     public function search(Request $request)
     {
-        $keyword = $request->keyword;
+        $keywords = $request->keyword;
         try{
-            if (empty($keyword)) {
+            if (empty($keywords)) {
                 throw new Exception('検索には検索ワードが必要です。');
             }
         } catch(Exception $e) {
@@ -188,11 +188,11 @@ class TaskController extends Controller
             )->withErrors('検索には検索ワードが必要です。');
         }
 
-        $search_tasks = Task::search($keyword)
-            ->get();
+        $search_tasks = $this->task_business_logic->searchFullTask($keywords);
+
         return view('tasks.search', [
             'search_tasks' => $search_tasks,
-            'keyword' => $keyword,
+            'keyword' => $keywords,
         ]);
     }
 

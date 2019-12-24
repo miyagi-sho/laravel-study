@@ -38,4 +38,10 @@ interface TaskBusinessLogicInterface
      * @return mixed
      */
     public function searchTaskByShare($share);
+
+    /**
+     * @param $keywords
+     * @return mixed
+     */
+    public function searchFullTask($keywords);
 }

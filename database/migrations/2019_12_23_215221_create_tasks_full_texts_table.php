@@ -14,7 +14,6 @@ class CreateTasksFullTextsTable extends Migration
     public function up()
     {
         Schema::create('tasks_full_texts', function (Blueprint $table) {
-            $table->integer('user_id');
             $table->integer('folder_id');
             $table->integer('task_id');
             //フォルダ名、タスク名、タスク詳細が入る。
