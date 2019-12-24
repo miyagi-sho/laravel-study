@@ -3,13 +3,10 @@
 namespace App;
 
 use Carbon\Carbon;
-use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    use Searchable;
-
     /**
      *状態定義
      */
