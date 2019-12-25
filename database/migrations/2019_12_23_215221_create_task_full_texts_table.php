@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTasksFullTextsTable extends Migration
+class CreateTaskFullTextsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTasksFullTextsTable extends Migration
      */
     public function up()
     {
-        Schema::create('tasks_full_texts', function (Blueprint $table) {
+        Schema::create('task_full_texts', function (Blueprint $table) {
             $table->integer('folder_id');
             $table->integer('task_id');
             //フォルダ名、タスク名、タスク詳細が入る。
@@ -29,6 +29,6 @@ class CreateTasksFullTextsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tasks_full_texts');
+        Schema::dropIfExists('task_full_texts');
     }
 }

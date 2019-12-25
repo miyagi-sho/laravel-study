@@ -4,7 +4,7 @@ namespace App\Business\Task;
 
 use App\Folder;
 use App\Task;
-use App\TasksFullText;
+use App\TaskFullText;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -95,21 +95,21 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
     {
         $keywords_array = explode("　", $keywords);
 
-        $search_tasks = TasksFullText::join('tasks', 'tasks_full_texts.task_id', '=', 'tasks.id')
-            ->join('folders', 'tasks_full_texts.folder_id', '=', 'folders.id')
+        $search_tasks = TaskFullText::join('tasks', 'task_full_texts.task_id', '=', 'tasks.id')
+            ->join('folders', 'task_full_texts.folder_id', '=', 'folders.id')
             ->select('folders.user_id',
-                'tasks_full_texts.folder_id',
-                'tasks_full_texts.task_id',
+                'task_full_texts.folder_id',
+                'task_full_texts.task_id',
                 'folders.title as folder_title',
                 'tasks.title as task_title',
-                'tasks_full_texts.full_text')
+                'task_full_texts.full_text')
             ->where('user_id', Auth::id())
             ->where(function ($query) use($keywords_array) {
                 foreach ($keywords_array as $keyword) {
                     $query->where('full_text', 'like', "%{$keyword}%");
                 }
-            })->select('tasks_full_texts.folder_id',
-                'tasks_full_texts.task_id',
+            })->select('task_full_texts.folder_id',
+                'task_full_texts.task_id',
                 'folders.title as folder_title',
                 'tasks.title as task_title')
             ->get();
