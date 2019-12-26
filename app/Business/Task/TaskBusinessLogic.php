@@ -93,7 +93,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     public function searchFullTask($keywords)
     {
-        $keywords_array = $this->multi_explode(array("　", " "), $keywords);
+        $keywords_array = $this->multi_explode([" ", "　"], $keywords);
 
         $search_tasks = TaskFullText::join('tasks', 'task_full_texts.task_id', '=', 'tasks.id')
             ->join('folders', 'task_full_texts.folder_id', '=', 'folders.id')
