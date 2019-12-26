@@ -171,6 +171,27 @@ class TaskController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function search(Request $request)
+    {
+        $keywords = $request->keyword;
+        if (empty($keywords)) {
+            return view('tasks.search', [
+                'search_tasks' => null,
+            ])->withErrors('検索には検索ワードが必要です。');
+        }
+
+        $search_tasks = $this->task_business_logic->searchFullTask($keywords);
+
+        return view('tasks.search', [
+            'search_tasks' => $search_tasks,
+            'keyword' => $keywords,
+        ]);
+    }
+
+    /**
      * @param Folder $folder
      * @param Task $task
      */

@@ -47,10 +47,12 @@ class TaskReminder extends Command
         $date = Carbon::tomorrow();
         $date = $date->format('Y-m-d');
 //        検証用
-//        $date = '2019-12-8';
+//        $date = '2025-12-8';
         $tasks = Task::where('due_date', '=', $date)
-            ->where('status', Task::STATUS_NAME['not_start'])
-            ->orWhere('status', Task::STATUS_NAME['start'])
+            ->where(function($query) {
+                $query->where('status', Task::STATUS_NAME['not_start'])
+                    ->orWhere('status', Task::STATUS_NAME['start']);
+            })
             ->get();
 
         //未完了タスクを含むフォルダを探し出す。

@@ -10,7 +10,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                状態：<span class="label {{ $task->status_class }}">{{ $task->status_label }}</span>
+                                状態：<p class="label {{ $task->status_class }}">{{ $task->status_label }}</p>
                             </td>
                             <td>
                                 期限：{{ $task->formatted_due_date }}

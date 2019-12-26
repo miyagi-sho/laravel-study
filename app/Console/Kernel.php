@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\TaskReminder::class,
+        Commands\CreatTaskFullText::class,
     ];
 
     /**
@@ -24,7 +25,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('reminder:unfinish-task')->dailyAt('13:00');
+        $schedule->command('reminder:unfinish-task')
+            ->dailyAt('13:00');
+        $schedule->command('fulltext:task')
+            ->daily();
     }
 
     /**
