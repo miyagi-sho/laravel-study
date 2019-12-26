@@ -17,7 +17,7 @@ class CreateTaskFullTextsTable extends Migration
             $table->integer('folder_id');
             $table->integer('task_id');
             //フォルダ名、タスク名、タスク詳細が入る。
-            $table->string('full_text');
+            $table->text('full_text');
             $table->timestamps();
         });
     }

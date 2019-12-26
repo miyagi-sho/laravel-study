@@ -93,7 +93,7 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
      */
     public function searchFullTask($keywords)
     {
-        $keywords_array = explode("　", $keywords);
+        $keywords_array = $this->multi_explode(array("　", " "), $keywords);
 
         $search_tasks = TaskFullText::join('tasks', 'task_full_texts.task_id', '=', 'tasks.id')
             ->join('folders', 'task_full_texts.folder_id', '=', 'folders.id')
@@ -115,6 +115,13 @@ class TaskBusinessLogic implements TaskBusinessLogicInterface
             ->get();
 
         return $search_tasks;
+    }
+
+    //複数の区切り文字を使用し、文字列を配列化する。
+    private function multi_explode ($delimiters,$string) {
+        $ready = str_replace($delimiters, $delimiters[0], $string);
+        $launch = explode($delimiters[0], $ready);
+        return  $launch;
     }
 
 
