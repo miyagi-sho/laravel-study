@@ -27,7 +27,7 @@ class TasksTableSeeder extends Seeder
 
         foreach (range(1, 3) as $num) {
             DB::table('tasks')->insert([
-                'folder_id' => 6,
+                'folder_id' => 2,
                 'title' => "絵画 {$num}",
                 'status' => $num,
                 'due_date' => '2025-12-8',
@@ -53,7 +53,7 @@ class TasksTableSeeder extends Seeder
 
         foreach ($comics as $comic) {
             DB::table('tasks')->insert([
-                'folder_id' => 4,
+                'folder_id' => 2,
                 'title' => $comic,
                 'status' => 1,
                 'due_date' => Carbon::now()->addyear(),
